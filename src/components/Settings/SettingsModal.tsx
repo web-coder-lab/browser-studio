@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { EditorSettings, WorkspaceApiKey, UserAccount } from '../../types/ide';
+import { EditorSettings, WorkspaceApiKey, UserAccount, DomainConfig } from '../../types/ide';
+import { STUDIO_HOST, verifyCustomDomainDns } from '../../services/domainService';
 import { 
   Settings as SettingsIcon, 
   Key, 
@@ -47,6 +48,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [visibleKeyId, setVisibleKeyId] = useState<string | null>(null);
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
   const [newKeyName, setNewKeyName] = useState<string>('');
+  const [domainName, setDomainName] = useState('');
+  const [domainInfo, setDomainInfo] = useState<DomainConfig | null>(null);
+  const [domainError, setDomainError] = useState('');
+  const [domainBusy, setDomainBusy] = useState(false);
 
   if (!isOpen) return null;
 
@@ -452,8 +457,8 @@ int main() {
                 {[
                   {
                     title: 'Custom domain attach',
-                    status: 'Not connected',
-                    desc: 'This app does not point a domain at your project. Use your host dashboard if you buy a domain.',
+                    status: 'DNS check is live',
+                    desc: 'Point a CNAME at browser-studio.onrender.com, then add the same hostname in Render Custom Domains. Use the checker below.',
                   },
                   {
                     title: 'Remote Linux shell',
@@ -481,6 +486,49 @@ int main() {
                     <p className="text-[11px] text-slate-400 leading-relaxed">{item.desc}</p>
                   </div>
                 ))}
+              </div>
+              <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+                <div className="flex items-center gap-2 text-cyan-300 text-xs font-bold">
+                  <Globe className="w-4 h-4" />
+                  <span>Check a domain (real DNS)</span>
+                </div>
+                <p className="text-[11px] text-slate-400">Expected CNAME target: <code className="text-indigo-300">{STUDIO_HOST}</code></p>
+                <div className="flex gap-2">
+                  <input
+                    value={domainName}
+                    onChange={(e) => setDomainName(e.target.value)}
+                    placeholder="studio.yourdomain.com"
+                    className="flex-1 bg-[#080a11] border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none"
+                  />
+                  <button
+                    disabled={domainBusy}
+                    onClick={async () => {
+                      setDomainBusy(true);
+                      setDomainError('');
+                      try {
+                        setDomainInfo(await verifyCustomDomainDns(domainName));
+                      } catch (err: any) {
+                        setDomainInfo(null);
+                        setDomainError(err.message || 'Lookup failed');
+                      } finally {
+                        setDomainBusy(false);
+                      }
+                    }}
+                    className="px-3 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold"
+                  >
+                    {domainBusy ? 'Checking…' : 'Check DNS'}
+                  </button>
+                </div>
+                {domainError && <p className="text-xs text-rose-400">{domainError}</p>}
+                {domainInfo && (
+                  <div className="text-[11px] text-slate-300 space-y-1">
+                    <p>Status: {domainInfo.status}</p>
+                    {domainInfo.dnsRecords.map((row) => (
+                      <p key={row.type}>{row.type}: {row.value} {row.verified ? '✓' : ''}</p>
+                    ))}
+                    <p>{domainInfo.sslInfo?.protocol}</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
