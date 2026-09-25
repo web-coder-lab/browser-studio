@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #090b11;
+    --bg-secondary: #0e121c;
+    --bg-tertiary: #131826;
+    --border-color: rgba(51, 65, 85, 0.4);
+    --accent-color: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.3);
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+  }
+
+  /* Android Studio Darcula Theme */
+  [data-theme="darcula"] {
+    --bg-primary: #1e1f22;
+    --bg-secondary: #2b2d30;
+    --bg-tertiary: #313438;
+    --border-color: #393b40;
+    --accent-color: #3574f0;
+    --accent-glow: rgba(53, 116, 240, 0.3);
+    --text-primary: #dfe1e5;
+    --text-muted: #868a91;
+  }
+
+  /* Electric Eel Theme */
+  [data-theme="electric-eel"] {
+    --bg-primary: #12141a;
+    --bg-secondary: #1a1d26;
+    --bg-tertiary: #222633;
+    --border-color: #2e3447;
+    --accent-color: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.35);
+    --text-primary: #f0f6fc;
+    --text-muted: #7d8590;
+  }
+
+  /* Cyberpunk Theme */
+  [data-theme="cyberpunk"] {
+    --bg-primary: #08060f;
+    --bg-secondary: #120b24;
+    --bg-tertiary: #1f1140;
+    --border-color: #4a1980;
+    --accent-color: #f43f5e;
+    --accent-glow: rgba(244, 63, 94, 0.4);
+    --text-primary: #fff;
+    --text-muted: #c084fc;
+  }
+
+  /* Monokai Pro Theme */
+  [data-theme="monokai"] {
+    --bg-primary: #19181a;
+    --bg-secondary: #221f22;
+    --bg-tertiary: #2d2a2e;
+    --border-color: #403e41;
+    --accent-color: #a9dc76;
+    --accent-glow: rgba(169, 220, 118, 0.3);
+    --text-primary: #fcfcfa;
+    --text-muted: #939293;
+  }
+
+  /* Nord Theme */
+  [data-theme="nord"] {
+    --bg-primary: #242933;
+    --bg-secondary: #2e3440;
+    --bg-tertiary: #3b4252;
+    --border-color: #4c566a;
+    --accent-color: #88c0d0;
+    --accent-glow: rgba(136, 192, 208, 0.3);
+    --text-primary: #eceff4;
+    --text-muted: #d8dee9;
+  }
+
+  /* GitHub Dark Theme */
+  [data-theme="github-dark"] {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-tertiary: #21262d;
+    --border-color: #30363d;
+    --accent-color: #58a6ff;
+    --accent-glow: rgba(88, 166, 255, 0.3);
+    --text-primary: #c9d1d9;
+    --text-muted: #8b949e;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.18s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.18s ease-out forwards;
+}

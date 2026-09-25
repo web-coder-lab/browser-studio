@@ -1,0 +1,6 @@
+{
+  "name": "Browser Studio",
+  "description": "High-performance browser development environment with multi-language execution (JavaScript, TypeScript, React TSX, Python 3.12, SQLite, Shell), interactive power shell, and client-authoritative zero-trust security.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

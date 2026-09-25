@@ -1,0 +1,185 @@
+/**
+ * Real local API for Browser Studio.
+ * Saves users and workspaces as JSON on THIS server disk.
+ * Does not use GitHub as a database. Does not accept chat tokens.
+ */
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
+const { URL } = require("url");
+
+const PORT = process.env.PORT || 3000;
+const ROOT = __dirname;
+const DATA = path.join(ROOT, "data");
+const PUBLIC = path.join(ROOT, "dist");
+const USERS = path.join(DATA, "users.json");
+const SESSIONS = path.join(DATA, "sessions.json");
+const WORK = path.join(DATA, "workspaces");
+
+if (!fs.existsSync(DATA)) fs.mkdirSync(DATA, { recursive: true });
+if (!fs.existsSync(WORK)) fs.mkdirSync(WORK, { recursive: true });
+if (!fs.existsSync(USERS)) fs.writeFileSync(USERS, "[]");
+if (!fs.existsSync(SESSIONS)) fs.writeFileSync(SESSIONS, "{}");
+
+const MIME = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".ico": "image/x-icon",
+  ".map": "application/json"
+};
+
+function readJson(file, fb) {
+  try { return JSON.parse(fs.readFileSync(file, "utf8")); }
+  catch { return fb; }
+}
+function writeJson(file, data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+function hashPass(password, salt) {
+  return crypto.scryptSync(String(password), salt, 32).toString("hex");
+}
+function token() { return crypto.randomBytes(24).toString("hex"); }
+function send(res, code, obj) {
+  res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Access-Control-Allow-Origin": "*" });
+  res.end(JSON.stringify(obj));
+}
+function bodyOf(req) {
+  return new Promise((resolve, reject) => {
+    let raw = "";
+    req.on("data", (c) => { raw += c; if (raw.length > 2e6) req.destroy(); });
+    req.on("end", () => {
+      try { resolve(raw ? JSON.parse(raw) : {}); }
+      catch { reject(new Error("Invalid JSON")); }
+    });
+  });
+}
+function publicUser(u) {
+  return { id: u.id, email: u.email, username: u.username, displayName: u.displayName, createdAt: u.createdAt };
+}
+function getAuth(req) {
+  const h = req.headers.authorization || "";
+  const t = h.startsWith("Bearer ") ? h.slice(7) : "";
+  const sessions = readJson(SESSIONS, {});
+  const s = sessions[t];
+  if (!s) return null;
+  const users = readJson(USERS, []);
+  const user = users.find((x) => x.id === s.userId);
+  return user ? { user, token: t } : null;
+}
+
+function serveStatic(res, urlPath) {
+  let p = decodeURIComponent(urlPath);
+  if (p === "/") p = "/help.html";
+  const fromRoot = path.normalize(path.join(ROOT, p));
+  if (fromRoot.startsWith(ROOT) && fs.existsSync(fromRoot) && fs.statSync(fromRoot).isFile() && [".html", ".md", ".css", ".js"].includes(path.extname(fromRoot))) {
+    res.writeHead(200, { "Content-Type": MIME[path.extname(fromRoot)] || "text/plain; charset=utf-8" });
+    fs.createReadStream(fromRoot).pipe(res);
+    return;
+  }
+  const file = path.normalize(path.join(PUBLIC, p));
+  if (!file.startsWith(PUBLIC)) {
+    res.writeHead(403); res.end("Forbidden"); return;
+  }
+  if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+    res.writeHead(200, { "Content-Type": MIME[path.extname(file)] || "application/octet-stream" });
+    fs.createReadStream(file).pipe(res);
+    return;
+  }
+  const index = path.join(PUBLIC, "index.html");
+  if (fs.existsSync(index)) {
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    fs.createReadStream(index).pipe(res);
+    return;
+  }
+  res.writeHead(404, { "Content-Type": "text/html; charset=utf-8" });
+  res.end(`<!DOCTYPE html><html><body style="font-family:sans-serif;background:#1b1b1b;color:#ddd;padding:48px">
+  <h1>404 — Page not found</h1>
+  <p>Aether / Browser Studio has no page for this URL.</p>
+  <p><a href="/" style="color:#7ab">Go home</a></p>
+  </body></html>`);
+}
+
+const server = http.createServer(async (req, res) => {
+  if (req.method === "OPTIONS") {
+    res.writeHead(204, {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Methods": "GET,POST,OPTIONS"
+    });
+    res.end();
+    return;
+  }
+  const url = new URL(req.url, "http://localhost:" + PORT);
+  const p = url.pathname;
+  try {
+    if (p === "/api/health") return send(res, 200, { ok: true, db: "local-json", githubDb: false });
+    if (p === "/api/register" && req.method === "POST") {
+      const b = await bodyOf(req);
+      const email = String(b.email || "").trim().toLowerCase();
+      const username = String(b.username || "").trim().toLowerCase();
+      const displayName = String(b.displayName || username);
+      const password = String(b.password || "");
+      if (!email.includes("@")) return send(res, 400, { ok: false, error: "Invalid email" });
+      if (username.length < 3) return send(res, 400, { ok: false, error: "Username too short" });
+      if (password.length < 6) return send(res, 400, { ok: false, error: "Password min 6" });
+      const users = readJson(USERS, []);
+      if (users.some((u) => u.email === email || u.username === username)) {
+        return send(res, 400, { ok: false, error: "Email or username already used" });
+      }
+      const salt = crypto.randomBytes(16).toString("hex");
+      const user = {
+        id: crypto.randomBytes(8).toString("hex"),
+        email, username, displayName, salt,
+        password: hashPass(password, salt),
+        createdAt: new Date().toISOString()
+      };
+      users.push(user); writeJson(USERS, users);
+      const sessions = readJson(SESSIONS, {});
+      const t = token(); sessions[t] = { userId: user.id, at: Date.now() }; writeJson(SESSIONS, sessions);
+      return send(res, 200, { ok: true, token: t, user: publicUser(user) });
+    }
+    if (p === "/api/login" && req.method === "POST") {
+      const b = await bodyOf(req);
+      const id = String(b.identifier || b.email || "").trim().toLowerCase();
+      const password = String(b.password || "");
+      const users = readJson(USERS, []);
+      const user = users.find((u) => u.email === id || u.username === id);
+      if (!user || user.password !== hashPass(password, user.salt)) {
+        return send(res, 400, { ok: false, error: "Wrong email/username or password" });
+      }
+      const sessions = readJson(SESSIONS, {});
+      const t = token(); sessions[t] = { userId: user.id, at: Date.now() }; writeJson(SESSIONS, sessions);
+      return send(res, 200, { ok: true, token: t, user: publicUser(user) });
+    }
+    if (p === "/api/me" && req.method === "GET") {
+      const a = getAuth(req);
+      if (!a) return send(res, 401, { ok: false, error: "Login required" });
+      return send(res, 200, { ok: true, user: publicUser(a.user) });
+    }
+    if (p === "/api/workspace" && req.method === "GET") {
+      const a = getAuth(req);
+      if (!a) return send(res, 401, { ok: false, error: "Login required" });
+      const f = path.join(WORK, a.user.id + ".json");
+      return send(res, 200, { ok: true, files: readJson(f, null) });
+    }
+    if (p === "/api/workspace" && req.method === "POST") {
+      const a = getAuth(req);
+      if (!a) return send(res, 401, { ok: false, error: "Login required" });
+      const b = await bodyOf(req);
+      const f = path.join(WORK, a.user.id + ".json");
+      writeJson(f, b.files || []);
+      return send(res, 200, { ok: true });
+    }
+    if (p.startsWith("/api/")) return send(res, 404, { ok: false, error: "API not found" });
+    serveStatic(res, p);
+  } catch (e) {
+    send(res, 500, { ok: false, error: e.message || "Server error" });
+  }
+});
+
+server.listen(PORT, () => console.log("Studio API http://localhost:" + PORT));

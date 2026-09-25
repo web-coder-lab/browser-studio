@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Help — Browser Studio</title>
+  <style>
+    :root { --bg:#12141a; --card:#1c2028; --line:#2c3340; --text:#e6e8ee; --mute:#9aa3b2; --acc:#6ea8ff; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Segoe UI, sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
+    header { padding:28px 20px; border-bottom:1px solid var(--line); background:#161920; }
+    header h1 { margin:0 0 6px; font-size:28px; }
+    header p { margin:0; color:var(--mute); }
+    main { max-width:860px; margin:0 auto; padding:24px 20px 80px; }
+    h2 { margin-top:32px; font-size:20px; }
+    h3 { font-size:16px; margin-top:20px; }
+    .card { background:var(--card); border:1px solid var(--line); padding:16px 18px; margin:12px 0; }
+    a { color:var(--acc); }
+    code { background:#0e1116; padding:1px 6px; }
+    ul { padding-left:20px; }
+    .warn { border-color:#6a3b36; background:#241618; }
+    nav a { margin-right:14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Browser Studio Help</h1>
+    <p>How to use the IDE. Honest limits. No demo passwords.</p>
+    <nav><a href="/">Home / Login</a> <a href="/404.html">404 example</a></nav>
+  </header>
+  <main>
+    <div class="card warn">
+      <strong>Safety</strong>
+      <p>Do not paste GitHub or Render tokens into this app or into chat. This project does not use GitHub as a user database.</p>
+    </div>
+
+    
+    <h2>How Browser Studio works now</h2>
+    <ol>
+      <li>Create account: enter Gmail → 6-digit code → display name, username, password.</li>
+      <li>Log in with that email and password. The account is confirmed only after login.</li>
+      <li>Forgot password uses the same email-code path.</li>
+      <li>Your project files save to Firebase, not the Render disk.</li>
+      <li>Use the file icon for files, search icon for find, tree icon for outline. Run starts preview.</li>
+      <li>HTML/CSS/JS preview is real in the browser. There is no remote Linux server and no fake custom-domain attach.</li>
+    </ol>
+<h2>1. Create an account</h2>
+    <p>Open the app → <strong>Register</strong>. Need: display name, username (3+), email, password (6+).</p>
+    <p>There are <strong>no built-in demo users</strong>. Old sample accounts were removed so hashes and fake API keys are not exposed.</p>
+    <p>Then use <strong>Sign In</strong> with the same username/email and password.</p>
+
+    <h2>2. After login</h2>
+    <ul>
+      <li>Left rail: files, search, git-style panel (local UI).</li>
+      <li>Center: code tabs. Edit HTML, CSS, JS for preview.</li>
+      <li>Bottom: terminal / tools dock.</li>
+      <li>Status bar: file and cursor info.</li>
+    </ul>
+
+    <h2>3. Preview</h2>
+    <p>Open <code>index.html</code>, related CSS/JS, then use the preview pane. Preview runs in a sandboxed iframe on your machine.</p>
+
+    <h2>4. Local server (real save)</h2>
+    <p>Run <code>node server.js</code>. This API is real:</p>
+    <ul>
+      <li><code>GET /api/health</code></li>
+      <li><code>POST /api/register</code></li>
+      <li><code>POST /api/login</code></li>
+      <li><code>GET /api/me</code> (Bearer token)</li>
+      <li><code>GET/POST /api/workspace</code> — files stored under <code>data/</code> on this computer</li>
+    </ul>
+    <p>Unknown API paths return JSON <code>404</code>. Unknown pages can show <a href="/404.html">404.html</a>.</p>
+
+    <h2>5. Settings</h2>
+    <p>Theme, font size, wrap, and related editor toggles stay in the Settings modal. They do not grant extra cloud power.</p>
+
+    <h2>6. What is not real (removed or locked)</h2>
+    <ul>
+      <li>One-click GitHub push / Render deploy from chat tokens</li>
+      <li>Custom domain attaching your project to the public internet</li>
+      <li>Fake “SSL valid” badge</li>
+      <li>Host Linux shell, nmap, cloudflared tunnels</li>
+      <li>APK / Electron / PWA exporters</li>
+      <li>AI coder</li>
+      <li>On-screen dump of all users and password hashes</li>
+    </ul>
+
+    <h2>7. Domain tool</h2>
+    <p>A DNS lookup can only tell you if a name has public A/CNAME records. It does not point that domain at your IDE unless you configure DNS at your registrar and host the built site yourself.</p>
+
+    <h2>8. Team panel</h2>
+    <p>Names you add are local to the browser unless you build real invites later. Do not treat it as a live multiplayer server.</p>
+
+    <h2>9. Keyboard (browser)</h2>
+    <ul>
+      <li>Normal typing in the editor</li>
+      <li>Use the app search modal if it is open in the toolbar</li>
+      <li>Logout from the account / auth control</li>
+    </ul>
+
+    <h2>10. Run locally</h2>
+    <div class="card">
+      <p><code>cd browser-studio</code></p>
+      <p><code>node server.js</code> → API + help + 404</p>
+      <p>Frontend UI (if you install Node packages on your PC): <code>npm install</code> then <code>npm run dev</code></p>
+    </div>
+
+    <h2>11. Host it yourself</h2>
+    <p>On your own Render/Vercel account: build the frontend, start <code>node server.js</code>, set PORT. Never commit tokens. Never put user passwords in a GitHub repo.</p>
+
+    <h2>12. Kids / school use</h2>
+    <p>This is a learning IDE. Keep content school-safe. Do not store other people’s passwords.</p>
+  </main>
+</body>
+</html>
