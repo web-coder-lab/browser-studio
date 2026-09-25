@@ -158,7 +158,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             }`}
           >
             <Rocket className="w-3.5 h-3.5" />
-            <span>3. Coming Soon</span>
+            <span>3. Honest limits</span>
           </button>
         </div>
 
@@ -171,9 +171,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/30 flex items-start gap-3">
                 <Lock className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <h4 className="text-xs font-bold text-indigo-300">Client-Authoritative Token Security</h4>
+                  <h4 className="text-xs font-bold text-indigo-300">Editor settings</h4>
                   <p className="text-[11.5px] text-slate-300 leading-relaxed">
-                    Tokens are cryptographically generated and stored only on your local device. Use them to authorize automated tasks and cURL endpoints.
+                    Labels you create here stay in this browser only. They are not a live cloud API and cannot deploy or attach a domain.
                   </p>
                 </div>
               </div>
@@ -290,7 +290,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <span>Browser Studio Complete Developer Reference</span>
                 </div>
                 <p className="text-[11.5px] text-slate-300 leading-relaxed">
-                  Browser Studio is a 100% client-authoritative development suite. All compiles, scripts, SQLite databases, Python routines, and WebAssembly binaries run directly on your browser device with zero server reliance.
+                  Sign in with Gmail code, then username and password, then log in again. Project files save through the server to Firebase. HTML/CSS/JS preview runs in your browser. There is no remote Linux machine.
                 </p>
               </div>
 
@@ -451,24 +451,24 @@ int main() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   {
-                    title: 'Native Mobile APK / AAB Packager',
-                    status: 'Native Toolchain',
-                    desc: 'Direct package generator for mobile devices requiring native JDK and Gradle toolchains.',
+                    title: 'Custom domain attach',
+                    status: 'Not connected',
+                    desc: 'This app does not point a domain at your project. Use your host dashboard if you buy a domain.',
                   },
                   {
-                    title: 'Desktop App Builder (Tauri / Electron)',
-                    status: 'Planned',
-                    desc: 'Cross-platform native executable builder targeting Windows .exe, macOS .dmg, and Linux AppImage.',
+                    title: 'Remote Linux shell',
+                    status: 'Not available',
+                    desc: 'Commands stay in the browser. There is no server SSH box.',
                   },
                   {
-                    title: 'Visual Drag-and-Drop Canvas',
-                    status: 'In R&D',
-                    desc: 'Interactive UI layout builder with real-time bi-directional AST synchronization.',
+                    title: 'Team live editing',
+                    status: 'Not available',
+                    desc: 'One signed-in account owns one workspace. Fake invite buttons were removed.',
                   },
                   {
-                    title: 'Clang WebAssembly C++ / Rust JIT',
-                    status: 'Active Beta',
-                    desc: 'High-speed browser compilation for native systems programming languages.',
+                    title: 'One-click cloud deploy',
+                    status: 'Not available',
+                    desc: 'Hosting is done from GitHub + Render by the project owner, not from a button inside the editor.',
                   },
                 ].map((item) => (
                   <div key={item.title} className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">

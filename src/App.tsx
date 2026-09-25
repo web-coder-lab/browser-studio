@@ -47,7 +47,6 @@ import { SearchEverywhereModal } from './components/Search/SearchEverywhereModal
 import { SettingsModal } from './components/Settings/SettingsModal';
 import { AuthModal } from './components/Auth/AuthModal';
 import { AuthGate } from './components/Auth/AuthGate';
-import { TeamModal } from './components/Team/TeamModal';
 import { StatusBar } from './components/StatusBar/StatusBar';
 
 export default function App() {
@@ -58,7 +57,7 @@ export default function App() {
   
   // User Authentication & Team State
   const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => getCurrentSession());
-  const [collaborators, setCollaborators] = useState<CollaboratorMember[]>([]);
+  const [collaborators] = useState<CollaboratorMember[]>([]);
 
   // Open Tabs
   const [tabs, setTabs] = useState<TabItem[]>([
@@ -83,22 +82,10 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [settingsTab, setSettingsTab] = useState<'keys' | 'help' | 'comingsoon'>('keys');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
-  const [isTeamModalOpen, setIsTeamModalOpen] = useState<boolean>(false);
 
   // Unified Run & Execution State
   const [isRunning, setIsRunning] = useState<boolean>(false);
 
-  // Default API Key
-  const defaultApiKey: WorkspaceApiKey = {
-    keyId: 'key_live_master',
-    apiKey: 'bs_live_99a812f94c03b1e77d88e001a4f',
-    name: 'Primary Automation Token',
-    createdAt: new Date().toLocaleDateString(),
-    permissions: ['read', 'write', 'execute', 'deploy'],
-    rateLimitPerMinute: 120,
-  };
-
-  // Editor Settings
   const [settings, setSettings] = useState<EditorSettings>({
     theme: 'darcula',
     fontFamily: 'Fira Code',
@@ -110,9 +97,9 @@ export default function App() {
     autoSave: true,
     autoPreview: true,
     editorViewMode: 'split',
-    terminalPrompt: 'kali@browser-studio',
+    terminalPrompt: 'studio@local',
     silentMode: true,
-    apiKeys: [defaultApiKey],
+    apiKeys: [],
   });
 
   // Apply Theme Attribute to DOM
@@ -406,8 +393,6 @@ export default function App() {
     } else if (target === 'comingsoon') {
       setSettingsTab('comingsoon');
       setIsSettingsOpen(true);
-    } else if (target === 'team') {
-      setIsTeamModalOpen(true);
     } else if (target === 'explorer') {
       setActiveSidebarView('explorer');
     } else if (target === 'preview') {
@@ -451,28 +436,8 @@ export default function App() {
   };
 
   // Team Management Handler for Shell
-  const handleManageTeamFromShell = (action: 'list' | 'invite', username?: string): string => {
-    if (action === 'list') {
-      const members = [`• @${currentUser?.username || 'you'} (Host / Owner)`];
-      collaborators.forEach((c) => members.push(`• @${c.username} (${c.role}) [${c.status}]`));
-      return `Active Workspace Team:\n${members.join('\n')}`;
-    } else if (action === 'invite') {
-      if (!username) return 'Usage: team invite <username>';
-      const newCollab: CollaboratorMember = {
-        id: `collab_${Date.now().toString(36)}`,
-        username: username.toLowerCase().trim(),
-        displayName: username.trim(),
-        email: `${username.toLowerCase().trim()}@collab.net`,
-        role: 'Editor',
-        status: 'online',
-        avatarColor: '#10b981',
-        joinedAt: new Date().toISOString().split('T')[0],
-      };
-      setCollaborators((prev) => [...prev, newCollab]);
-      saveCollaborators([...collaborators, newCollab]);
-      return `✨ Invited friend @${username} to workspace!`;
-    }
-    return '';
+  const handleManageTeamFromShell = (_action: 'list' | 'invite', _username?: string): string => {
+    return 'Team invites are not live. This studio is one account and one workspace.';
   };
 
   // DRAG RESIZING HANDLERS
@@ -548,7 +513,6 @@ export default function App() {
           setSettingsTab(tab || 'keys');
           setIsSettingsOpen(true);
         }}
-        onOpenTeamModal={() => setIsTeamModalOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         currentUser={currentUser}
         collaborators={collaborators}
@@ -765,16 +729,7 @@ export default function App() {
         }}
       />
 
-      {/* 6. Team Collaboration & Friends Modal */}
-      <TeamModal
-        isOpen={isTeamModalOpen}
-        onClose={() => setIsTeamModalOpen(false)}
-        collaborators={collaborators}
-        setCollaborators={setCollaborators}
-        currentUser={currentUser}
-      />
-
-      {/* 7. Minimal Status Bar */}
+      {/* Status Bar */}
       <StatusBar
         activeFilePath={activeFilePath}
         notifications={[]}

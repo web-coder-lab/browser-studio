@@ -55,25 +55,10 @@ export const GitPanel: React.FC<GitPanelProps> = ({
         </form>
       </div>
 
-      {/* Cloud Deploy Quick Trigger */}
-      <div className="p-3 border-b border-slate-800/80 bg-gradient-to-br from-indigo-950/30 to-cyan-950/30 shrink-0">
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-xs font-semibold text-white flex items-center gap-1.5">
-            <CloudUpload className="w-4 h-4 text-cyan-400" /> Cloud Deploy
-          </span>
-          <span className="text-[10px] text-cyan-400 bg-cyan-950/80 border border-cyan-800 px-1.5 py-0.5 rounded">
-            GitHub • Render
-          </span>
-        </div>
-        <p className="text-[11px] text-slate-400 mb-2.5">
-          Push workspace files directly to your GitHub repository and trigger live cloud builds.
+      <div className="p-3 border-b border-slate-800/80 shrink-0">
+        <p className="text-[11px] text-slate-400 leading-relaxed">
+          Files save to your signed-in Firebase workspace. One-click GitHub / Render deploy from this panel is not connected.
         </p>
-        <button
-          onClick={onOpenDeploy}
-          className="w-full py-2 bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-all"
-        >
-          <CloudUpload className="w-3.5 h-3.5" /> Deploy Pipeline Wizard
-        </button>
       </div>
 
       {/* Staged / Working Tree Files */}

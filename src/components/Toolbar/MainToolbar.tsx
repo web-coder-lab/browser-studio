@@ -6,7 +6,6 @@ import {
   Columns, 
   LayoutTemplate, 
   Settings as SettingsIcon,
-  Users,
   User
 } from 'lucide-react';
 import { EditorSettings, UserAccount, CollaboratorMember } from '../../types/ide';
@@ -18,7 +17,6 @@ interface MainToolbarProps {
   settings: EditorSettings;
   onToggleViewMode: (mode: 'code' | 'split' | 'design') => void;
   onOpenSettingsModal: (tab?: 'keys' | 'help' | 'comingsoon') => void;
-  onOpenTeamModal: () => void;
   onOpenAuthModal: () => void;
   currentUser: UserAccount | null;
   collaborators: CollaboratorMember[];
@@ -31,7 +29,6 @@ export const MainToolbar: React.FC<MainToolbarProps> = ({
   settings,
   onToggleViewMode,
   onOpenSettingsModal,
-  onOpenTeamModal,
   onOpenAuthModal,
   currentUser,
   collaborators,

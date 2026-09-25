@@ -5,111 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Help — Browser Studio</title>
   <style>
-    :root { --bg:#12141a; --card:#1c2028; --line:#2c3340; --text:#e6e8ee; --mute:#9aa3b2; --acc:#6ea8ff; }
+    :root { --bg:#0b0d14; --card:#151822; --line:#2a3142; --text:#e8eaf0; --mute:#9aa3b2; --acc:#67e8f9; --ind:#818cf8; }
     * { box-sizing: border-box; }
-    body { margin:0; font-family: Segoe UI, sans-serif; background:var(--bg); color:var(--text); line-height:1.55; }
-    header { padding:28px 20px; border-bottom:1px solid var(--line); background:#161920; }
-    header h1 { margin:0 0 6px; font-size:28px; }
+    body { margin:0; font-family: Segoe UI, sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+    header { padding:32px 20px; border-bottom:1px solid var(--line); background:#10131c; }
+    header h1 { margin:0 0 8px; font-size:28px; }
     header p { margin:0; color:var(--mute); }
-    main { max-width:860px; margin:0 auto; padding:24px 20px 80px; }
-    h2 { margin-top:32px; font-size:20px; }
+    main { max-width:880px; margin:0 auto; padding:24px 20px 80px; }
+    h2 { margin-top:36px; font-size:20px; color:#c7d2fe; }
     h3 { font-size:16px; margin-top:20px; }
-    .card { background:var(--card); border:1px solid var(--line); padding:16px 18px; margin:12px 0; }
+    .card { background:var(--card); border:1px solid var(--line); padding:16px 18px; margin:12px 0; border-radius:12px; }
     a { color:var(--acc); }
-    code { background:#0e1116; padding:1px 6px; }
-    ul { padding-left:20px; }
-    .warn { border-color:#6a3b36; background:#241618; }
+    code { background:#090b10; padding:1px 6px; border-radius:4px; }
+    ul, ol { padding-left:22px; }
+    .warn { border-color:#7f1d1d; background:#1c1012; }
     nav a { margin-right:14px; }
   </style>
 </head>
 <body>
   <header>
-    <h1>Browser Studio Help</h1>
-    <p>How to use the IDE. Honest limits. No demo passwords.</p>
-    <nav><a href="/">Home / Login</a> <a href="/404.html">404 example</a></nav>
+    <h1>Browser Studio — full help</h1>
+    <p>How every real screen works. What was removed because it was fake.</p>
+    <nav><a href="/">Open the studio</a></nav>
   </header>
   <main>
     <div class="card warn">
-      <strong>Safety</strong>
-      <p>Do not paste GitHub or Render tokens into this app or into chat. This project does not use GitHub as a user database.</p>
+      <strong>Do not paste secrets here</strong>
+      <p>Never put GitHub, Render, Gmail app passwords, or Firebase keys in the editor or in chat. Keys live only in the host dashboard.</p>
     </div>
 
-    
-    <h2>How Browser Studio works now</h2>
+    <h2>1. Create an account (required path)</h2>
     <ol>
-      <li>Create account: enter Gmail → 6-digit code → display name, username, password.</li>
-      <li>Log in with that email and password. The account is confirmed only after login.</li>
-      <li>Forgot password uses the same email-code path.</li>
-      <li>Your project files save to Firebase, not the Render disk.</li>
-      <li>Use the file icon for files, search icon for find, tree icon for outline. Run starts preview.</li>
-      <li>HTML/CSS/JS preview is real in the browser. There is no remote Linux server and no fake custom-domain attach.</li>
+      <li>Open the app. Choose <strong>Create account</strong>.</li>
+      <li>Enter your Gmail / email and send the code.</li>
+      <li>Read the 6-digit code from email (or the on-screen dev code if mail is not configured yet).</li>
+      <li>Enter display name, username, and a password of 8+ characters.</li>
+      <li>The account is stored. You are still logged out.</li>
+      <li>Choose <strong>Log in</strong> with the same email and password. Only then the studio opens.</li>
     </ol>
-<h2>1. Create an account</h2>
-    <p>Open the app → <strong>Register</strong>. Need: display name, username (3+), email, password (6+).</p>
-    <p>There are <strong>no built-in demo users</strong>. Old sample accounts were removed so hashes and fake API keys are not exposed.</p>
-    <p>Then use <strong>Sign In</strong> with the same username/email and password.</p>
 
-    <h2>2. After login</h2>
+    <h2>2. Log in and stay signed in</h2>
+    <p>Login asks the server for a session token. Refresh keeps you signed in until you log out. Logout clears the token.</p>
+
+    <h2>3. Forgot password</h2>
+    <ol>
+      <li>Choose Forgot password.</li>
+      <li>Send a recovery code to the same email.</li>
+      <li>Enter the code and a new 8+ character password.</li>
+      <li>Log in with the new password.</li>
+    </ol>
+
+    <h2>4. After login — one icon per place</h2>
     <ul>
-      <li>Left rail: files, search, git-style panel (local UI).</li>
-      <li>Center: code tabs. Edit HTML, CSS, JS for preview.</li>
-      <li>Bottom: terminal / tools dock.</li>
-      <li>Status bar: file and cursor info.</li>
+      <li>Files icon — project files</li>
+      <li>Tree icon — outline of the open file</li>
+      <li>Search icon — find in files</li>
+      <li>Run — preview HTML/CSS/JS in the right pane</li>
+      <li>Code / Split / Design — only those three view modes</li>
+      <li>Account — who you are</li>
+      <li>Settings — editor size, help, honest limits</li>
     </ul>
+    <p>There is no extra team button, deploy wizard, or domain attach button.</p>
 
-    <h2>3. Preview</h2>
-    <p>Open <code>index.html</code>, related CSS/JS, then use the preview pane. Preview runs in a sandboxed iframe on your machine.</p>
+    <h2>5. Files and save</h2>
+    <p>While you are signed in, the editor saves the file tree to Firebase through <code>POST /api/workspace</code>. Reloading loads <code>GET /api/workspace</code>. Nothing is stored as a database on the Render disk.</p>
 
-    <h2>4. Local server (real save)</h2>
-    <p>Run <code>node server.js</code>. This API is real:</p>
+    <h2>6. Preview and Run</h2>
+    <p>HTML, CSS, and JavaScript run in a sandboxed preview in your browser. That part is real. Python / SQL helpers that exist in the UI also run in the browser, not on a hidden Linux VPS.</p>
+
+    <h2>7. Real API routes</h2>
     <ul>
       <li><code>GET /api/health</code></li>
-      <li><code>POST /api/register</code></li>
-      <li><code>POST /api/login</code></li>
-      <li><code>GET /api/me</code> (Bearer token)</li>
-      <li><code>GET/POST /api/workspace</code> — files stored under <code>data/</code> on this computer</li>
+      <li><code>POST /api/auth/otp</code></li>
+      <li><code>POST /api/auth/otp/verify</code></li>
+      <li><code>POST /api/auth/register</code></li>
+      <li><code>POST /api/auth/login</code></li>
+      <li><code>POST /api/auth/recovery</code></li>
+      <li><code>GET /api/auth/me</code></li>
+      <li><code>POST /api/auth/logout</code></li>
+      <li><code>GET /api/workspace</code> and <code>POST /api/workspace</code></li>
     </ul>
-    <p>Unknown API paths return JSON <code>404</code>. Unknown pages can show <a href="/404.html">404.html</a>.</p>
+    <p>Unknown <code>/api/...</code> paths return JSON 404. Unknown pages serve the studio or <code>/404.html</code>.</p>
 
-    <h2>5. Settings</h2>
-    <p>Theme, font size, wrap, and related editor toggles stay in the Settings modal. They do not grant extra cloud power.</p>
-
-    <h2>6. What is not real (removed or locked)</h2>
+    <h2>8. What was removed because it was not real</h2>
     <ul>
-      <li>One-click GitHub push / Render deploy from chat tokens</li>
-      <li>Custom domain attaching your project to the public internet</li>
-      <li>Fake “SSL valid” badge</li>
-      <li>Host Linux shell, nmap, cloudflared tunnels</li>
-      <li>APK / Electron / PWA exporters</li>
-      <li>AI coder</li>
-      <li>On-screen dump of all users and password hashes</li>
+      <li>Demo users and exposed passwords</li>
+      <li>One-click GitHub + Render deploy from the editor</li>
+      <li>Custom domain attach and fake SSL badges</li>
+      <li>Remote Linux / nmap / tunnel toys</li>
+      <li>Live team invites</li>
+      <li>Hard-coded live API keys</li>
     </ul>
 
-    <h2>7. Domain tool</h2>
-    <p>A DNS lookup can only tell you if a name has public A/CNAME records. It does not point that domain at your IDE unless you configure DNS at your registrar and host the built site yourself.</p>
+    <h2>9. Owner setup (once)</h2>
+    <ol>
+      <li>Firebase Console → project <code>early-networks</code> → create Firestore (Native mode).</li>
+      <li>Optional: create Storage if you will store APK/json files later.</li>
+      <li>Render env already has Firebase project, client email, and private key.</li>
+      <li>Add Gmail app password later so OTP goes to real inboxes. Until then, a dev code is only shown when the server is not in production mail mode.</li>
+    </ol>
 
-    <h2>8. Team panel</h2>
-    <p>Names you add are local to the browser unless you build real invites later. Do not treat it as a live multiplayer server.</p>
-
-    <h2>9. Keyboard (browser)</h2>
-    <ul>
-      <li>Normal typing in the editor</li>
-      <li>Use the app search modal if it is open in the toolbar</li>
-      <li>Logout from the account / auth control</li>
-    </ul>
-
-    <h2>10. Run locally</h2>
-    <div class="card">
-      <p><code>cd browser-studio</code></p>
-      <p><code>node server.js</code> → API + help + 404</p>
-      <p>Frontend UI (if you install Node packages on your PC): <code>npm install</code> then <code>npm run dev</code></p>
-    </div>
-
-    <h2>11. Host it yourself</h2>
-    <p>On your own Render/Vercel account: build the frontend, start <code>node server.js</code>, set PORT. Never commit tokens. Never put user passwords in a GitHub repo.</p>
-
-    <h2>12. Kids / school use</h2>
-    <p>This is a learning IDE. Keep content school-safe. Do not store other people’s passwords.</p>
+    <h2>10. School-safe use</h2>
+    <p>This is a learning editor. Keep projects school-safe. Do not store other people’s passwords.</p>
   </main>
 </body>
 </html>

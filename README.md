@@ -1,20 +1,23 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Browser Studio
 
-# Run and deploy your AI Studio app
+Editor + preview. Accounts and project files live in Firebase through the Node server.
 
-This contains everything you need to run your app locally.
+## Run locally
 
-View your app in AI Studio: https://ai.studio/apps/cfc5d3f9-89d4-4bd9-a5f2-60d90c1cfbd2
+npm install --legacy-peer-deps
+npm run build
+npm start
 
-## Run Locally
+Health: GET /api/health
 
-**Prerequisites:**  Node.js
+## Account flow
 
+1. Register: Gmail, 6-digit code, display name, username, password
+2. Log in again to confirm
+3. Forgot password uses the same email code path
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Honest limits
+
+No custom domain attach, no remote Linux, no live team editing, no one-click deploy from the editor.
+
+Full guide: /help.html
