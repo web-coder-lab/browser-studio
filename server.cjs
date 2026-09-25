@@ -57,13 +57,13 @@ function toFields(obj) {
 }
 async function fsWrite(col, id, obj) {
   const token = await gtoken();
-  const res = await fetch("https://firestore.googleapis.com/v1/projects/" + PROJECT + "/databases/(default)/documents/" + col + "/" + id, { method: "PATCH", headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify(toFields(obj)) });
+  const res = await fetch("https://firestore.googleapis.com/v1/projects/" + PROJECT + "/databases/" + (process.env.FIRESTORE_DATABASE || "default") + "/documents/" + col + "/" + id, { method: "PATCH", headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" }, body: JSON.stringify(toFields(obj)) });
   if (!res.ok) throw new Error("FIREBASE_WRITE_FAILED");
   return obj;
 }
 async function fsRead(col, id) {
   const token = await gtoken();
-  const res = await fetch("https://firestore.googleapis.com/v1/projects/" + PROJECT + "/databases/(default)/documents/" + col + "/" + id, { headers: { Authorization: "Bearer " + token } });
+  const res = await fetch("https://firestore.googleapis.com/v1/projects/" + PROJECT + "/databases/" + (process.env.FIRESTORE_DATABASE || "default") + "/documents/" + col + "/" + id, { headers: { Authorization: "Bearer " + token } });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error("FIREBASE_READ_FAILED");
   return fromDoc(await res.json());
