@@ -73,6 +73,10 @@ async function findUser(identifier) {
   if (byUser && byUser.userId) return fsRead("studio_users", byUser.userId);
   return null;
 }
+function mailAddr(value) {
+  const m = String(value || "").match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  return m ? m[0] : String(value || "").trim();
+}
 async function mailOtp(to, code) {
   if (!SMTP_USER || !SMTP_PASS) {
     if (NODE_ENV !== "production") return { sent: true, devCode: code };
@@ -93,7 +97,8 @@ async function mailOtp(to, code) {
           else if (step === 1 && n < 400) { w("AUTH LOGIN"); step = 2; }
           else if (step === 2 && n === 334) { w(Buffer.from(SMTP_USER).toString("base64")); step = 3; }
           else if (step === 3 && n === 334) { w(Buffer.from(SMTP_PASS).toString("base64")); step = 4; }
-          else if (step === 4 && n === 235) { w("MAIL FROM:<" + (SMTP_FROM || SMTP_USER) + ">"); step = 5; }
+          else if (step === 4 && n === 535) { socket.end(); reject(new Error("GMAIL_PASSWORD_REJECTED")); }
+          else if (step === 4 && n === 235) { w("MAIL FROM:<" + mailAddr(SMTP_FROM || SMTP_USER) + ">"); step = 5; }
           else if (step === 5 && n < 400) { w("RCPT TO:<" + to + ">"); step = 6; }
           else if (step === 6 && n < 400) { w("DATA"); step = 7; }
           else if (step === 7 && n === 354) { socket.write("From: Browser Studio <" + SMTP_USER + ">\r\nTo: " + to + "\r\nSubject: Browser Studio code " + code + "\r\n\r\nYour code is " + code + " (10 minutes).\r\n.\r\n"); step = 8; }
@@ -224,7 +229,15 @@ const server = http.createServer(async (req, res) => {
     if (p.startsWith("/api/")) return send(res, 404, { error: "API route not found." });
     return serveStatic(res, p);
   } catch (err) {
-    const map = { FIREBASE_NOT_CONFIGURED: [503, "Firebase is not configured."], FIREBASE_WRITE_FAILED: [503, "Create Firestore Database in Firebase Console first."], FIREBASE_READ_FAILED: [503, "Firebase database is not ready."], FIREBASE_AUTH_FAILED: [503, "Firebase credentials failed."], MAIL_NOT_CONFIGURED: [503, "Email sending is not configured."] };
+    const map = {
+      FIREBASE_NOT_CONFIGURED: [503, "Firebase is not configured."],
+      FIREBASE_WRITE_FAILED: [503, "Create Firestore Database in Firebase Console first."],
+      FIREBASE_READ_FAILED: [503, "Firebase database is not ready."],
+      FIREBASE_AUTH_FAILED: [503, "Firebase credentials failed."],
+      MAIL_NOT_CONFIGURED: [503, "Email sending is not configured."],
+      GMAIL_PASSWORD_REJECTED: [503, "Gmail rejected the app password. Create a new 16-letter App Password and send it again."],
+    };
+    if (String(err.message || "").startsWith("SMTP")) return send(res, 503, { error: "Gmail rejected the mailbox login. Create a new App Password." });
     const hit = map[err.message] || [500, "Server error."];
     return send(res, hit[0], { error: hit[1] });
   }
