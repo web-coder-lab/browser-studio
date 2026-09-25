@@ -105,7 +105,22 @@
       <li>Add Gmail app password later so OTP goes to real inboxes. Until then, a dev code is only shown when the server is not in production mail mode.</li>
     </ol>
 
-    <h2>10. School-safe use</h2>
+    <h2>10. Custom domain (real DNS)</h2>
+    <ol>
+      <li>Use a domain you already own.</li>
+      <li>Create CNAME: studio.yourdomain.com → browser-studio.onrender.com</li>
+      <li>Wait for DNS.</li>
+      <li>Settings → Honest limits → Check DNS.</li>
+      <li>If verified, add the same hostname in Render Custom Domains for HTTPS.</li>
+    </ol>
+    <h2>11. Ads plan (not switched on)</h2>
+    <ul>
+      <li>No ads on Login, OTP, password, or the editor.</li>
+      <li>Later, only Help page bottom or logged-out welcome — one Native Banner / Banner.</li>
+      <li>Never Popunder or Social Bar on this IDE.</li>
+    </ul>
+    <p>The live app does not load ad-network scripts.</p>
+    <h2>12. School-safe use</h2>
     <p>This is a learning editor. Keep projects school-safe. Do not store other people’s passwords.</p>
   </main>
 </body>
